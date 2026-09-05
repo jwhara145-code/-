@@ -14,149 +14,269 @@ st.set_page_config(page_title="سَبْر | Sabr", page_icon="🔎", layout="cen
 st.markdown(
     """
     <style>
-    body, .stApp { background-color: #050a16; }
-    h1, h2, h3, p, label, .stMarkdown { color: #eef2fa !important; }
-    .stButton>button { background-color: #1f5fc4; color: white; border: none; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+
+    :root{
+        --bg-0:#050a16; --panel:#0c1a33; --panel-2:#10213f;
+        --blue:#1f5fc4; --blue-bright:#4d8dff; --blue-soft:#2a3f66;
+        --purple:#7c5cff; --purple-soft:#9b7bff;
+        --text:#eef2fa; --text-dim:#8ea0c2;
+        --border:rgba(255,255,255,0.09);
+        --glow: 0 0 40px rgba(124,92,255,0.18);
+    }
+
+    html, body, [class*="css"] { font-family: 'Tajawal', 'Inter', sans-serif; }
+
+    .stApp{
+        background:
+            radial-gradient(ellipse 60% 40% at 20% 0%, rgba(124,92,255,0.18), transparent 60%),
+            radial-gradient(ellipse 50% 40% at 85% 15%, rgba(77,141,255,0.16), transparent 55%),
+            radial-gradient(ellipse 70% 50% at 50% 100%, rgba(31,95,196,0.10), transparent 60%),
+            var(--bg-0);
+    }
+
+    .block-container{ max-width: 760px; padding-top: 1.2rem; }
+
+    h1, h2, h3, p, label, .stMarkdown, span { color: var(--text) !important; }
+
+    /* hero title */
+    .sabr-hero{ text-align:center; padding: 22px 0 10px; position:relative; }
+    .sabr-hero h1{
+        font-size: 56px; font-weight:800; margin:0; letter-spacing:0.5px;
+        background: linear-gradient(90deg, #ffffff 8%, var(--blue-bright) 50%, var(--purple-soft) 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent !important;
+        filter: drop-shadow(0 0 24px rgba(124,92,255,0.25));
+    }
+    .sabr-hero p{ color: var(--text-dim) !important; font-size:15px; margin-top:8px; }
+    .sabr-hero .tag{
+        display:inline-block; margin-top:12px; font-size:11.5px; color:var(--purple-soft);
+        border:1px solid rgba(124,92,255,0.35); background:rgba(124,92,255,0.08);
+        padding:5px 14px; border-radius:999px; letter-spacing:0.5px;
+    }
+
+    /* card-style bordered containers */
+    div[data-testid="stVerticalBlockBorderWrapper"]{
+        background: linear-gradient(165deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+        border: 1px solid var(--border) !important;
+        border-radius: 20px !important;
+        padding: 8px 6px;
+        box-shadow: 0 14px 34px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.04);
+        backdrop-filter: blur(10px);
+    }
+
+    /* stat / metric cards */
+    div[data-testid="stMetric"]{
+        background: linear-gradient(165deg, rgba(124,92,255,0.10), rgba(77,141,255,0.04));
+        border: 1px solid rgba(124,92,255,0.22);
+        border-radius: 16px;
+        padding: 14px 16px 10px;
+    }
+    div[data-testid="stMetricLabel"]{ color: var(--text-dim) !important; font-size: 12.5px !important; }
+    div[data-testid="stMetricValue"]{
+        color: var(--text) !important; font-weight:800 !important;
+        background: linear-gradient(90deg, var(--blue-bright), var(--purple-soft));
+        -webkit-background-clip: text; background-clip: text; color: transparent !important;
+    }
+
+    /* section headers with accent bar */
+    h3{ position:relative; padding-right:14px !important; font-size:19px !important; }
+    h3::before{
+        content:''; position:absolute; right:0; top:4px; bottom:4px; width:4px;
+        border-radius:4px; background: linear-gradient(180deg, var(--blue-bright), var(--purple));
+    }
+
+    /* buttons */
+    .stButton>button{
+        background: linear-gradient(90deg, var(--blue), var(--purple));
+        color: #fff; border: none; border-radius: 12px;
+        padding: 0.6rem 1.5rem; font-weight:700; letter-spacing:0.2px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 6px 18px rgba(124,92,255,0.30);
+    }
+    .stButton>button:hover{ transform: translateY(-2px); box-shadow: 0 10px 26px rgba(124,92,255,0.42); }
+    .stButton>button:active{ transform: translateY(0px); }
+    .stButton>button:disabled{ background:#2a3f66; box-shadow:none; opacity:0.6; }
+
+    /* file uploader */
+    [data-testid="stFileUploaderDropzone"]{
+        background: rgba(255,255,255,0.025) !important;
+        border: 1.5px dashed var(--blue-soft) !important;
+        border-radius: 16px !important;
+    }
+    [data-testid="stFileUploaderDropzone"]:hover{ border-color: var(--purple-soft) !important; }
+
+    /* inputs */
+    input, .stDateInput input, .stTimeInput input{
+        background: rgba(255,255,255,0.045) !important;
+        border-radius: 10px !important; color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+    }
+
+    /* alerts */
+    div[data-testid="stAlert"]{ border-radius: 14px !important; backdrop-filter: blur(6px); }
+
+    hr{ border-color: var(--border) !important; }
+
+    ::-webkit-scrollbar{ width:8px; }
+    ::-webkit-scrollbar-thumb{ background: var(--blue-soft); border-radius:8px; }
+
+    /* responsive tweaks */
+    @media (max-width: 640px){
+        .block-container{ padding-left: 0.9rem; padding-right: 0.9rem; }
+        .sabr-hero h1{ font-size: 36px; }
+        .sabr-hero p{ font-size: 13px; }
+        div[data-testid="stMetricValue"]{ font-size: 22px !important; }
+    }
     </style>
+
+    <div class="sabr-hero">
+        <h1>سَبْر</h1>
+        <p>منصة التحقق من صحة الأدلة الرقمية عبر بصمة الشبكة الكهربائية السعودية</p>
+        <div class="tag">ENF · Electric Network Frequency Verification</div>
+    </div>
     """,
     unsafe_allow_html=True,
 )
 
-st.title("سَبْر")
-st.caption("منصة التحقق من صحة الأدلة الرقمية عبر بصمة الشبكة الكهربائية السعودية (ENF)")
-
-total_points = db.archive_count()
-oldest, newest = db.archive_time_range()
-if total_points > 0:
-    st.info(
-        f"الأرشيف المرجعي الحالي: {total_points} نقطة محفوظة، "
-        f"من {oldest.strftime('%Y-%m-%d %H:%M')} إلى {newest.strftime('%Y-%m-%d %H:%M')}"
-    )
-else:
-    st.warning("الأرشيف المرجعي فارغ حاليًا — ابدئي بإضافة أول تسجيل بالخطوة ١.")
+with st.container(border=True):
+    total_points = db.archive_count()
+    oldest, newest = db.archive_time_range()
+    m1, m2 = st.columns(2)
+    with m1:
+        st.metric("نقاط الأرشيف المحفوظة", f"{total_points:,}")
+    with m2:
+        if total_points > 0:
+            span_label = f"{oldest.strftime('%m-%d %H:%M')} → {newest.strftime('%m-%d %H:%M')}"
+        else:
+            span_label = "لا يوجد بعد"
+        st.metric("النطاق الزمني المغطّى", span_label)
+    if total_points == 0:
+        st.warning("الأرشيف المرجعي فارغ حاليًا — ابدئي بإضافة أول تسجيل بالخطوة ١.")
 db_ready = True
 
-st.divider()
+st.write("")
 
 # ---------- Step 1: reference archive ----------
-st.subheader("١. إضافة تسجيل مرجعي جديد للأرشيف")
-st.write("ارفعي مقطع صوت من جهاز التسجيل المستمر، وحدّدي وقت بداية هذا المقطع فعليًا.")
+with st.container(border=True):
+    st.subheader("١. إضافة تسجيل مرجعي جديد للأرشيف")
+    st.write("ارفعي مقطع صوت من جهاز التسجيل المستمر، وحدّدي وقت بداية هذا المقطع فعليًا.")
 
-col1, col2 = st.columns(2)
-with col1:
-    ref_date = st.date_input("تاريخ بداية التسجيل", value=datetime.date.today())
-with col2:
-    ref_time = st.time_input("وقت بداية التسجيل", value=datetime.time(0, 0))
+    col1, col2 = st.columns(2)
+    with col1:
+        ref_date = st.date_input("تاريخ بداية التسجيل", value=datetime.date.today())
+    with col2:
+        ref_time = st.time_input("وقت بداية التسجيل", value=datetime.time(0, 0))
 
-ref_file = st.file_uploader("ملف الأرشيف المرجعي (wav/mp3/m4a)", type=["wav", "mp3", "m4a"], key="ref")
+    ref_file = st.file_uploader("ملف الأرشيف المرجعي (wav/mp3/m4a)", type=["wav", "mp3", "m4a"], key="ref")
 
-if ref_file is not None and st.button("استخراج وحفظ بالأرشيف الدائم", disabled=not db_ready):
-    start_dt = datetime.datetime.combine(ref_date, ref_time)
-    raw_suffix = "." + ref_file.name.split(".")[-1]
-    with tempfile.NamedTemporaryFile(delete=False, suffix=raw_suffix) as tmp:
-        tmp.write(ref_file.read())
-        raw_ref_path = tmp.name
+    if ref_file is not None and st.button("استخراج وحفظ بالأرشيف الدائم", disabled=not db_ready):
+        start_dt = datetime.datetime.combine(ref_date, ref_time)
+        raw_suffix = "." + ref_file.name.split(".")[-1]
+        with tempfile.NamedTemporaryFile(delete=False, suffix=raw_suffix) as tmp:
+            tmp.write(ref_file.read())
+            raw_ref_path = tmp.name
 
-    ref_path = raw_ref_path + "_converted.wav"
-    convert_result = subprocess.run(
-        ["ffmpeg", "-y", "-i", raw_ref_path, "-ar", "16000", "-ac", "1", ref_path],
-        capture_output=True,
-    )
-    if convert_result.returncode != 0 or not os.path.exists(ref_path):
-        st.error(
-            "تعذّر تحويل الملف الصوتي. تأكدي أن الملف سليم وغير تالف، "
-            "وجربي تصدير التسجيل بصيغة WAV مباشرة إن أمكن."
-        )
-        with st.expander("تفاصيل الخطأ التقنية"):
-            st.code(convert_result.stderr.decode(errors="ignore")[-1500:])
-    else:
-        with st.spinner("جاري استخراج بصمة ENF وحفظها بقاعدة البيانات الدائمة..."):
-            t, f = extract_enf(ref_path)
-            saved_count = db.save_reference_points(start_dt, t, f)
-        st.success(f"تم حفظ {saved_count} نقطة بشكل دائم بقاعدة البيانات — لن تُفقد حتى لو أُعيد تشغيل التطبيق.")
-        st.line_chart(pd.DataFrame({"التردد (هرتز)": f}))
-
-    os.unlink(raw_ref_path)
-    if os.path.exists(ref_path):
-        os.unlink(ref_path)
-
-st.divider()
-
-# ---------- Step 2: video/audio to verify ----------
-st.subheader("٢. التسجيل المطلوب التحقق منه")
-suspect_file = st.file_uploader("فيديو أو ملف صوتي للتحقق (mp4/wav/mp3)", type=["mp4", "wav", "mp3", "m4a"], key="suspect")
-
-if suspect_file is not None and st.button("تحليل والتحقق من الأرشيف الدائم", disabled=not db_ready):
-    archive_times, archive_freqs = db.load_reference_archive()
-
-    if len(archive_freqs) == 0:
-        st.error("الأرشيف المرجعي فارغ — أضيفي تسجيلًا مرجعيًا أولًا بالخطوة ١.")
-    else:
-        suffix = "." + suspect_file.name.split(".")[-1]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-            tmp.write(suspect_file.read())
-            raw_path = tmp.name
-
-        audio_path = raw_path + "_converted.wav"
+        ref_path = raw_ref_path + "_converted.wav"
         convert_result = subprocess.run(
-            ["ffmpeg", "-y", "-i", raw_path, "-ar", "16000", "-ac", "1", "-vn", audio_path],
+            ["ffmpeg", "-y", "-i", raw_ref_path, "-ar", "16000", "-ac", "1", ref_path],
             capture_output=True,
         )
-
-        if convert_result.returncode != 0 or not os.path.exists(audio_path):
+        if convert_result.returncode != 0 or not os.path.exists(ref_path):
             st.error(
-                "تعذّر تحويل الملف المرفوع. تأكدي أن الملف سليم وغير تالف."
+                "تعذّر تحويل الملف الصوتي. تأكدي أن الملف سليم وغير تالف، "
+                "وجربي تصدير التسجيل بصيغة WAV مباشرة إن أمكن."
             )
             with st.expander("تفاصيل الخطأ التقنية"):
                 st.code(convert_result.stderr.decode(errors="ignore")[-1500:])
-            os.unlink(raw_path)
-            st.stop()
-
-        with st.spinner("جاري استخراج بصمة ENF ومقارنتها بالأرشيف الدائم..."):
-            q_times, q_freqs = extract_enf(audio_path)
-
-        st.line_chart(pd.DataFrame({"التردد (هرتز)": q_freqs}))
-
-        jump_idx = detect_jump(q_freqs)
-
-        if jump_idx is None:
-            best_i, confidence = find_best_match(archive_times, archive_freqs, q_freqs)
-            if best_i is not None and confidence > 0.3:
-                matched_start = archive_times[best_i]
-                matched_end = archive_times[min(best_i + len(q_freqs) - 1, len(archive_times) - 1)]
-                st.success(
-                    f"✅ التسجيل يبدو أصليًا — درجة الثقة: {confidence:.0%}\n\n"
-                    f"الوقت المطابق بالأرشيف: من **{matched_start.strftime('%Y-%m-%d %H:%M:%S')}** "
-                    f"إلى **{matched_end.strftime('%Y-%m-%d %H:%M:%S')}**"
-                )
-            else:
-                st.warning(
-                    "لم يُعثر على تطابق قوي بالأرشيف الحالي — "
-                    "قد يكون التسجيل من فترة غير مغطاة بالأرشيف بعد، أو بعيدًا عن مصدر كهرباء."
-                )
         else:
-            part1 = q_freqs[:jump_idx]
-            part2 = q_freqs[jump_idx:]
-            i1, c1 = find_best_match(archive_times, archive_freqs, part1)
-            i2, c2 = find_best_match(archive_times, archive_freqs, part2)
+            with st.spinner("جاري استخراج بصمة ENF وحفظها بقاعدة البيانات الدائمة..."):
+                t, f = extract_enf(ref_path)
+                saved_count = db.save_reference_points(start_dt, t, f)
+            st.success(f"تم حفظ {saved_count} نقطة بشكل دائم بقاعدة البيانات — لن تُفقد حتى لو أُعيد تشغيل التطبيق.")
+            st.line_chart(pd.DataFrame({"التردد (هرتز)": f}))
 
-            msg = f"⚠️ تم اكتشاف تلاعب محتمل عند النقطة {jump_idx} من التسجيل.\n\n"
-            if i1 is not None:
-                t1_start = archive_times[i1]
-                t1_end = archive_times[min(i1 + len(part1) - 1, len(archive_times) - 1)]
-                msg += f"الجزء الأول يطابق: **{t1_start.strftime('%Y-%m-%d %H:%M:%S')} → {t1_end.strftime('%H:%M:%S')}** (ثقة {c1:.0%})\n\n"
-            if i2 is not None:
-                t2_start = archive_times[i2]
-                msg += f"الجزء الثاني يطابق: بدايةً من **{t2_start.strftime('%Y-%m-%d %H:%M:%S')}** (ثقة {c2:.0%})\n\n"
-            if i1 is not None and i2 is not None:
-                gap = (t2_start - t1_end)
-                msg += f"**الفترة المفقودة (المحذوفة/المدموجة): {gap}**"
+        os.unlink(raw_ref_path)
+        if os.path.exists(ref_path):
+            os.unlink(ref_path)
 
-            st.error(msg)
+st.write("")
 
-        os.unlink(raw_path)
-        if audio_path != raw_path:
-            os.unlink(audio_path)
+# ---------- Step 2: video/audio to verify ----------
+with st.container(border=True):
+    st.subheader("٢. التسجيل المطلوب التحقق منه")
+    suspect_file = st.file_uploader("فيديو أو ملف صوتي للتحقق (mp4/wav/mp3)", type=["mp4", "wav", "mp3", "m4a"], key="suspect")
 
-st.divider()
+    if suspect_file is not None and st.button("تحليل والتحقق من الأرشيف الدائم", disabled=not db_ready):
+        archive_times, archive_freqs = db.load_reference_archive()
+
+        if len(archive_freqs) == 0:
+            st.error("الأرشيف المرجعي فارغ — أضيفي تسجيلًا مرجعيًا أولًا بالخطوة ١.")
+        else:
+            suffix = "." + suspect_file.name.split(".")[-1]
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                tmp.write(suspect_file.read())
+                raw_path = tmp.name
+
+            audio_path = raw_path + "_converted.wav"
+            convert_result = subprocess.run(
+                ["ffmpeg", "-y", "-i", raw_path, "-ar", "16000", "-ac", "1", "-vn", audio_path],
+                capture_output=True,
+            )
+
+            if convert_result.returncode != 0 or not os.path.exists(audio_path):
+                st.error(
+                    "تعذّر تحويل الملف المرفوع. تأكدي أن الملف سليم وغير تالف."
+                )
+                with st.expander("تفاصيل الخطأ التقنية"):
+                    st.code(convert_result.stderr.decode(errors="ignore")[-1500:])
+                os.unlink(raw_path)
+                st.stop()
+
+            with st.spinner("جاري استخراج بصمة ENF ومقارنتها بالأرشيف الدائم..."):
+                q_times, q_freqs = extract_enf(audio_path)
+
+            st.line_chart(pd.DataFrame({"التردد (هرتز)": q_freqs}))
+
+            jump_idx = detect_jump(q_freqs)
+
+            if jump_idx is None:
+                best_i, confidence = find_best_match(archive_times, archive_freqs, q_freqs)
+                if best_i is not None and confidence > 0.3:
+                    matched_start = archive_times[best_i]
+                    matched_end = archive_times[min(best_i + len(q_freqs) - 1, len(archive_times) - 1)]
+                    st.success(
+                        f"✅ التسجيل يبدو أصليًا — درجة الثقة: {confidence:.0%}\n\n"
+                        f"الوقت المطابق بالأرشيف: من **{matched_start.strftime('%Y-%m-%d %H:%M:%S')}** "
+                        f"إلى **{matched_end.strftime('%Y-%m-%d %H:%M:%S')}**"
+                    )
+                else:
+                    st.warning(
+                        "لم يُعثر على تطابق قوي بالأرشيف الحالي — "
+                        "قد يكون التسجيل من فترة غير مغطاة بالأرشيف بعد، أو بعيدًا عن مصدر كهرباء."
+                    )
+            else:
+                part1 = q_freqs[:jump_idx]
+                part2 = q_freqs[jump_idx:]
+                i1, c1 = find_best_match(archive_times, archive_freqs, part1)
+                i2, c2 = find_best_match(archive_times, archive_freqs, part2)
+
+                msg = f"⚠️ تم اكتشاف تلاعب محتمل عند النقطة {jump_idx} من التسجيل.\n\n"
+                if i1 is not None:
+                    t1_start = archive_times[i1]
+                    t1_end = archive_times[min(i1 + len(part1) - 1, len(archive_times) - 1)]
+                    msg += f"الجزء الأول يطابق: **{t1_start.strftime('%Y-%m-%d %H:%M:%S')} → {t1_end.strftime('%H:%M:%S')}** (ثقة {c1:.0%})\n\n"
+                if i2 is not None:
+                    t2_start = archive_times[i2]
+                    msg += f"الجزء الثاني يطابق: بدايةً من **{t2_start.strftime('%Y-%m-%d %H:%M:%S')}** (ثقة {c2:.0%})\n\n"
+                if i1 is not None and i2 is not None:
+                    gap = (t2_start - t1_end)
+                    msg += f"**الفترة المفقودة (المحذوفة/المدموجة): {gap}**"
+
+                st.error(msg)
+
+            os.unlink(raw_path)
+            if audio_path != raw_path:
+                os.unlink(audio_path)
+
+st.write("")
 st.caption("نموذج أولي شغّال يثبت المبدأ العلمي — وليس نظامًا معتمدًا رسميًا للاستخدام القضائي الفعلي بعد.")
