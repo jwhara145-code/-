@@ -59,24 +59,39 @@ st.markdown(
         background: linear-gradient(165deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
         border: 1px solid var(--border) !important;
         border-radius: 20px !important;
-        padding: 8px 6px;
+        padding: 18px 18px !important;
         box-shadow: 0 14px 34px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.04);
         backdrop-filter: blur(10px);
+        margin-bottom: 14px !important;
     }
+    /* tighten default Streamlit gaps between stacked elements */
+    div[data-testid="stVerticalBlock"]{ gap: 0.6rem !important; }
+    div[data-testid="element-container"]{ margin-bottom: 0 !important; }
 
     /* stat / metric cards */
     div[data-testid="stMetric"]{
         background: linear-gradient(165deg, rgba(124,92,255,0.10), rgba(77,141,255,0.04));
         border: 1px solid rgba(124,92,255,0.22);
         border-radius: 16px;
-        padding: 14px 16px 10px;
+        padding: 12px 16px !important;
+        min-height: unset !important;
     }
-    div[data-testid="stMetricLabel"]{ color: var(--text-dim) !important; font-size: 12.5px !important; }
+    div[data-testid="stMetricLabel"]{ color: var(--text-dim) !important; font-size: 12.5px !important; line-height:1.3 !important; }
     div[data-testid="stMetricValue"]{
-        color: var(--text) !important; font-weight:800 !important;
+        color: var(--text) !important; font-weight:800 !important; line-height:1.3 !important;
         background: linear-gradient(90deg, var(--blue-bright), var(--purple-soft));
         -webkit-background-clip: text; background-clip: text; color: transparent !important;
     }
+    div[data-testid="stMetricDelta"]{ display:none !important; }
+
+    /* alerts — unify to match dark theme instead of default bright colors */
+    div[data-testid="stAlert"]{
+        border-radius: 14px !important; backdrop-filter: blur(6px);
+        background: rgba(255,255,255,0.045) !important;
+        border: 1px solid var(--border) !important;
+    }
+    div[data-testid="stAlert"] p{ color: var(--text) !important; }
+    div[data-testid="stAlert"] svg{ display:none; }
 
     /* section headers with accent bar */
     h3{ position:relative; padding-right:14px !important; font-size:19px !important; }
@@ -112,9 +127,6 @@ st.markdown(
         border: 1px solid var(--border) !important;
     }
 
-    /* alerts */
-    div[data-testid="stAlert"]{ border-radius: 14px !important; backdrop-filter: blur(6px); }
-
     hr{ border-color: var(--border) !important; }
 
     ::-webkit-scrollbar{ width:8px; }
@@ -126,6 +138,21 @@ st.markdown(
         .sabr-hero h1{ font-size: 36px; }
         .sabr-hero p{ font-size: 13px; }
         div[data-testid="stMetricValue"]{ font-size: 22px !important; }
+    }
+
+    /* force column stacking on narrow/tablet screens — independent of
+       Streamlit's own internal breakpoint, so it works reliably on
+       iPad and phones alike */
+    @media (max-width: 900px){
+        div[data-testid="stHorizontalBlock"]{
+            flex-direction: column !important;
+            gap: 10px !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]{
+            width: 100% !important;
+            min-width: 100% !important;
+            flex: 1 1 100% !important;
+        }
     }
     </style>
 
@@ -153,8 +180,6 @@ with st.container(border=True):
     if total_points == 0:
         st.warning("الأرشيف المرجعي فارغ حاليًا — ابدئي بإضافة أول تسجيل بالخطوة ١.")
 db_ready = True
-
-st.write("")
 
 # ---------- Step 1: reference archive ----------
 with st.container(border=True):
@@ -198,8 +223,6 @@ with st.container(border=True):
         os.unlink(raw_ref_path)
         if os.path.exists(ref_path):
             os.unlink(ref_path)
-
-st.write("")
 
 # ---------- Step 2: video/audio to verify ----------
 with st.container(border=True):
@@ -278,5 +301,4 @@ with st.container(border=True):
             if audio_path != raw_path:
                 os.unlink(audio_path)
 
-st.write("")
 st.caption("نموذج أولي شغّال يثبت المبدأ العلمي — وليس نظامًا معتمدًا رسميًا للاستخدام القضائي الفعلي بعد.")
