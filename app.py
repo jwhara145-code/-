@@ -154,37 +154,58 @@ st.markdown(
             flex: 1 1 100% !important;
         }
     }
+    /* sidebar styling to match the dark glass theme */
+    section[data-testid="stSidebar"]{
+        background: linear-gradient(180deg, #071022, #050a16) !important;
+        border-left: 1px solid var(--border);
+    }
+    section[data-testid="stSidebar"] .sabr-side-logo{
+        font-size: 34px; font-weight:800; text-align:center; margin-top:6px;
+        background: linear-gradient(90deg, #ffffff 10%, var(--blue-bright) 55%, var(--purple-soft) 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent !important;
+    }
+    section[data-testid="stSidebar"] .sabr-side-tag{
+        text-align:center; font-size:12px; color:var(--text-dim) !important; margin-bottom:18px;
+    }
+    /* tabs styled like a segmented nav */
+    button[data-baseweb="tab"]{
+        color: var(--text-dim) !important; font-weight:600 !important; font-size:15px !important;
+    }
+    button[data-baseweb="tab"][aria-selected="true"]{ color: var(--text) !important; }
+    div[data-baseweb="tab-highlight"]{ background: linear-gradient(90deg, var(--blue-bright), var(--purple)) !important; }
+    div[data-baseweb="tab-border"]{ background: var(--border) !important; }
     </style>
-
-    <div class="sabr-hero">
-        <h1>سَبْر</h1>
-        <p>منصة التحقق من صحة الأدلة الرقمية عبر بصمة الشبكة الكهربائية السعودية</p>
-        <div class="tag">ENF · Electric Network Frequency Verification</div>
-    </div>
     """,
     unsafe_allow_html=True,
 )
 
-with st.container(border=True):
+with st.sidebar:
+    st.markdown(
+        """
+        <div class="sabr-side-logo">سَبْر</div>
+        <div class="sabr-side-tag">ENF · التحقق من الأدلة الرقمية</div>
+        """,
+        unsafe_allow_html=True,
+    )
     total_points = db.archive_count()
     oldest, newest = db.archive_time_range()
-    m1, m2 = st.columns(2)
-    with m1:
-        st.metric("نقاط الأرشيف المحفوظة", f"{total_points:,}")
-    with m2:
-        if total_points > 0:
-            span_label = f"{oldest.strftime('%m-%d %H:%M')} → {newest.strftime('%m-%d %H:%M')}"
-        else:
-            span_label = "لا يوجد بعد"
-        st.metric("النطاق الزمني المغطّى", span_label)
+    st.metric("نقاط الأرشيف المحفوظة", f"{total_points:,}")
+    if total_points > 0:
+        span_label = f"{oldest.strftime('%m-%d %H:%M')} → {newest.strftime('%m-%d %H:%M')}"
+    else:
+        span_label = "لا يوجد بعد"
+    st.metric("النطاق الزمني المغطّى", span_label)
     if total_points == 0:
-        st.warning("الأرشيف المرجعي فارغ حاليًا — ابدئي بإضافة أول تسجيل بالخطوة ١.")
+        st.warning("الأرشيف فارغ — ابدئي بتبويب الأرشيف المرجعي.")
+    st.divider()
+    st.caption("نموذج أولي يثبت المبدأ العلمي — وليس نظامًا معتمدًا رسميًا للاستخدام القضائي الفعلي بعد.")
+
 db_ready = True
 
-step_col1, step_col2 = st.columns(2)
+tab1, tab2 = st.tabs(["١. الأرشيف المرجعي", "٢. التحقق من تسجيل"])
 
 # ---------- Step 1: reference archive ----------
-with step_col1:
+with tab1:
     with st.container(border=True):
         st.subheader("١. إضافة تسجيل مرجعي جديد للأرشيف")
         st.write("ارفعي مقطع صوت من جهاز التسجيل المستمر، وحدّدي وقت بداية هذا المقطع فعليًا.")
@@ -228,7 +249,7 @@ with step_col1:
                 os.unlink(ref_path)
 
 # ---------- Step 2: video/audio to verify ----------
-with step_col2:
+with tab2:
     with st.container(border=True):
         st.subheader("٢. التسجيل المطلوب التحقق منه")
         suspect_file = st.file_uploader("فيديو أو ملف صوتي للتحقق (mp4/wav/mp3)", type=["mp4", "wav", "mp3", "m4a"], key="suspect")
@@ -304,5 +325,3 @@ with step_col2:
                 os.unlink(raw_path)
                 if audio_path != raw_path:
                     os.unlink(audio_path)
-
-st.caption("نموذج أولي شغّال يثبت المبدأ العلمي — وليس نظامًا معتمدًا رسميًا للاستخدام القضائي الفعلي بعد.")
